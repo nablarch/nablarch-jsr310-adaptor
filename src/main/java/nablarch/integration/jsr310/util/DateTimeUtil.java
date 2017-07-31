@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import nablarch.core.repository.SystemRepository;
+import nablarch.core.util.annotation.Published;
 
 /**
  * Date and Time API向けのユーティリティ。
@@ -19,6 +20,7 @@ import nablarch.core.repository.SystemRepository;
  * @author TIS
  * @see DateTimeConfiguration
  */
+@Published
 public final class DateTimeUtil {
 
     /** 日付変換に使用する設定 */

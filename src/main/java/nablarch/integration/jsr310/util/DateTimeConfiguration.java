@@ -3,11 +3,14 @@ package nablarch.integration.jsr310.util;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
+import nablarch.core.util.annotation.Published;
+
 /**
  * Date and Time APIに関する共通的なフォーマッタ、タイムゾーンを扱うためのインターフェース。
  *
  * @author TIS
  */
+@Published(tag = "architect")
 public interface DateTimeConfiguration {
 
     /**
