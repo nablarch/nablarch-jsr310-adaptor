@@ -1,5 +1,6 @@
 package nablarch.integration.jsr310.util;
 
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -149,12 +150,23 @@ public final class DateTimeUtil {
     /**
      * {@code java.time.LocalDateTime}のインスタンスを{@code java.util.Date}に変換する
      *
-     * @param dateTime 変換対象の{@code java.time.LocalDate}のインスタンス
+     * @param dateTime 変換対象の{@code java.time.LocalDateTime}のインスタンス
      * @return 変換後の{@code java.util.Date}のインスタンス
      */
     public static Date getDate(final LocalDateTime dateTime) {
         return Date.from(dateTime.atZone(getDateTimeConfiguration().getSystemZoneId())
                                  .toInstant());
+    }
+
+    /**
+     * {@code java.time.LocalDateTime}のインスタンスを{@code java.sql.Timestamp}に変換する
+     *
+     * @param dateTime 変換対象の{@code java.time.LocalDateTime}のインスタンス
+     * @return 変換後の{@code Timestamp}のインスタンス
+     */
+    public static Timestamp getTimestamp(final LocalDateTime dateTime) {
+        return Timestamp.from(dateTime.atZone(getDateTimeConfiguration().getSystemZoneId())
+                                      .toInstant());
     }
 
     /**

@@ -121,4 +121,10 @@ public class DateTimeUtilTest {
         assertThat(DateTimeUtil.getDate(LocalDateTime.of(2017, 1, 2, 3, 4, 5, 123456789)),
                 is(DateUtil.getParsedDate("2017/01/02 03:04:05.123", "yyyy/MM/dd hh:mm:ss.SSS")));
     }
+    
+    @Test
+    public void getTimestampFromLocalDateTime() throws Exception {
+        assertThat(DateTimeUtil.getDate(LocalDateTime.of(2017, 1, 2, 3, 4, 5, 123456789)),
+                is(Timestamp.valueOf("2017-01-02 03:04:05.123456789")));
+    }
 }
