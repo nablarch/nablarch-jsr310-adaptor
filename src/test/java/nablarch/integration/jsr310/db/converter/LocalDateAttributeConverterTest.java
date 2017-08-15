@@ -6,8 +6,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.sql.Date;
 import java.time.LocalDate;
 
-import org.eclipse.persistence.internal.descriptors.InteractionArgument;
-
 import nablarch.core.util.DateUtil;
 
 import org.junit.Test;
