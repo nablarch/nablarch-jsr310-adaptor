@@ -125,7 +125,7 @@ public class UniversalDaoTest {
     @Table(name = "test_entity")
     public static class TestEntity {
 
-        @Column(name = "id")
+        @Column(name = "id", length = 15)
         @Id
         public Long id;
 

@@ -115,7 +115,7 @@ public class NablarchJdbcTest {
     public static class JSR310 {
 
         @Id
-        @Column(name = "id")
+        @Column(name = "id", length = 15)
         public Long id;
 
         @Column(name = "date_col")
