@@ -69,14 +69,14 @@ public class NablarchJdbcTest {
     public void LocalDateとLocalDateTimeを登録できること() throws Exception {
         final SqlPStatement statement = connection.prepareStatement("insert into jsr310 (id, date_col, timestamp_col) values (1, ?, ?) ");
         statement.setObject(1, LocalDate.of(2017, 1, 2));
-        statement.setObject(2, LocalDateTime.of(1980, 2, 29, 12, 13, 14, 999999999));
+        statement.setObject(2, LocalDateTime.of(1980, 2, 29, 12, 13, 14, 999999000));
         statement.executeUpdate();
         connection.commit();
 
         final List<JSR310> actual = VariousDbTestHelper.findAll(JSR310.class);
         assertThat(actual)
                   .extracting("date", "timestamp")
-                  .containsExactly(tuple(DateUtil.getDate("20170102"), Timestamp.valueOf("1980-02-29 12:13:14.999999999")));
+                  .containsExactly(tuple(DateUtil.getDate("20170102"), Timestamp.valueOf("1980-02-29 12:13:14.999999000")));
     }
 
     @Test
@@ -98,16 +98,16 @@ public class NablarchJdbcTest {
     public void LocalDateTimeを条件にできること() throws Exception {
 
         VariousDbTestHelper.setUpTable(
-                new JSR310(1L, DateUtil.getDate("20170809"), Timestamp.valueOf("2016-01-01 11:22:33.123321123")),
-                new JSR310(2L, DateUtil.getDate("20170810"), Timestamp.valueOf("2016-01-01 11:22:34.123321123")),
-                new JSR310(3L, DateUtil.getDate("20170811"), Timestamp.valueOf("2016-01-01 11:22:35.123321123"))
+                new JSR310(1L, DateUtil.getDate("20170809"), Timestamp.valueOf("2016-01-01 11:22:33.123321000")),
+                new JSR310(2L, DateUtil.getDate("20170810"), Timestamp.valueOf("2016-01-01 11:22:34.123321000")),
+                new JSR310(3L, DateUtil.getDate("20170811"), Timestamp.valueOf("2016-01-01 11:22:35.123321000"))
         );
         final SqlPStatement statement = connection.prepareStatement("select * from jsr310 where timestamp_col = ?");
-        statement.setObject(1, LocalDateTime.of(2016, 1, 1, 11, 22, 34, 123321123));
+        statement.setObject(1, LocalDateTime.of(2016, 1, 1, 11, 22, 34, 123321000));
 
         assertThat(statement.retrieve())
                   .extracting(input -> tuple(input.getLong("id"), input.getTimestamp("timestampCol")))
-                  .containsExactly(tuple(2L, Timestamp.valueOf("2016-01-01 11:22:34.123321123")));
+                  .containsExactly(tuple(2L, Timestamp.valueOf("2016-01-01 11:22:34.123321000")));
     }
 
     @Entity

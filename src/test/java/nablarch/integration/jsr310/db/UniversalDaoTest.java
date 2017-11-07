@@ -74,7 +74,8 @@ public class UniversalDaoTest {
     @Test
     public void 登録できること() throws Exception {
         final LocalDate date = LocalDate.now();
-        final LocalDateTime dateTime = LocalDateTime.now();
+        final LocalDateTime dateTime = LocalDateTime.now()
+                .withNano(123321000);
         final DaoEntity entity = new DaoEntity(1L, date, dateTime);
 
         UniversalDao.insert(entity);
@@ -90,34 +91,34 @@ public class UniversalDaoTest {
     @Test
     public void 検索結果として取得できること() throws Exception {
         VariousDbTestHelper.setUpTable(
-                new TestEntity(1L, DateUtil.getDate("20110101"), Timestamp.valueOf("2012-01-02 11:22:33.123321123")),
-                new TestEntity(2L, DateUtil.getDate("20110102"), Timestamp.valueOf("2012-02-02 11:22:33.123321123")),
-                new TestEntity(3L, DateUtil.getDate("20110103"), Timestamp.valueOf("2012-03-02 11:22:33.123321123"))
+                new TestEntity(1L, DateUtil.getDate("20110101"), Timestamp.valueOf("2012-01-02 11:22:33.123321000")),
+                new TestEntity(2L, DateUtil.getDate("20110102"), Timestamp.valueOf("2012-02-02 11:22:33.123321000")),
+                new TestEntity(3L, DateUtil.getDate("20110103"), Timestamp.valueOf("2012-03-02 11:22:33.123321000"))
         );
 
         final DaoEntity actual = UniversalDao.findById(DaoEntity.class, 2L);
         assertThat(actual)
                 .hasFieldOrPropertyWithValue("id", 2L)
                 .hasFieldOrPropertyWithValue("dateCol", LocalDate.of(2011, 1, 2))
-                .hasFieldOrPropertyWithValue("timestampCol", LocalDateTime.of(2012, 2, 2, 11, 22, 33, 123321123));
+                .hasFieldOrPropertyWithValue("timestampCol", LocalDateTime.of(2012, 2, 2, 11, 22, 33, 123321000));
     }
 
     @Test
     public void 条件として使用できること() throws Exception {
         VariousDbTestHelper.setUpTable(
-                new TestEntity(1L, DateUtil.getDate("20110101"), Timestamp.valueOf("2012-01-02 11:22:33.123321123")),
-                new TestEntity(2L, DateUtil.getDate("20110102"), Timestamp.valueOf("2012-02-02 11:22:33.123321123")),
-                new TestEntity(3L, DateUtil.getDate("20110103"), Timestamp.valueOf("2012-03-02 11:22:33.123321123"))
+                new TestEntity(1L, DateUtil.getDate("20110101"), Timestamp.valueOf("2012-01-02 11:22:33.123321000")),
+                new TestEntity(2L, DateUtil.getDate("20110102"), Timestamp.valueOf("2012-02-02 11:22:33.123321000")),
+                new TestEntity(3L, DateUtil.getDate("20110103"), Timestamp.valueOf("2012-03-02 11:22:33.123321000"))
         );
 
         final EntityList<DaoEntity> actual = UniversalDao.findAllBySqlFile(DaoEntity.class,
                 "nablarch.integration.jsr310.db.test#find",
-                new DaoEntity(2L, LocalDate.of(2011, 1, 2), LocalDateTime.of(2012, 2, 2, 11, 22, 33, 123321123)));
+                new DaoEntity(2L, LocalDate.of(2011, 1, 2), LocalDateTime.of(2012, 2, 2, 11, 22, 33, 123321000)));
 
         assertThat(actual)
                 .hasSize(1)
                 .extracting("id", "dateCol", "timestampCol")
-                .containsExactly(tuple(2L, LocalDate.of(2011, 1, 2), LocalDateTime.of(2012, 2, 2, 11, 22, 33, 123321123)));
+                .containsExactly(tuple(2L, LocalDate.of(2011, 1, 2), LocalDateTime.of(2012, 2, 2, 11, 22, 33, 123321000)));
     }
 
     @Entity
