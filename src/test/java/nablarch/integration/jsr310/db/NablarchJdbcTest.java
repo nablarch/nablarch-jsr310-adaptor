@@ -24,11 +24,11 @@ import nablarch.core.transaction.TransactionContext;
 import nablarch.core.util.DateUtil;
 import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.db.helper.DatabaseTestRunner;
+import nablarch.test.support.db.helper.TargetDb;
 import nablarch.test.support.db.helper.VariousDbTestHelper;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,16 +46,10 @@ public class NablarchJdbcTest {
     /** テストで使用するコネクション */
     private TransactionManagerConnection connection;
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        VariousDbTestHelper.createTable(JSR310.class);
-    }
-
     @Before
     public void setUp() throws Exception {
         final ConnectionFactory connectionFactory = SystemRepository.get("connectionFactory");
         connection = connectionFactory.getConnection(TransactionContext.DEFAULT_TRANSACTION_CONTEXT_KEY);
-        VariousDbTestHelper.delete(JSR310.class);
     }
 
     @After
@@ -66,7 +60,9 @@ public class NablarchJdbcTest {
     }
 
     @Test
+    @TargetDb(exclude = TargetDb.Db.SQL_SERVER)
     public void LocalDateとLocalDateTimeを登録できること() throws Exception {
+        VariousDbTestHelper.createTable(JSR310.class);
         final SqlPStatement statement = connection.prepareStatement("insert into jsr310 (id, date_col, timestamp_col) values (1, ?, ?) ");
         statement.setObject(1, LocalDate.of(2017, 1, 2));
         statement.setObject(2, LocalDateTime.of(1980, 2, 29, 12, 13, 14, 999999000));
@@ -78,9 +74,27 @@ public class NablarchJdbcTest {
                   .extracting("date", "timestamp")
                   .containsExactly(tuple(DateUtil.getDate("20170102"), Timestamp.valueOf("1980-02-29 12:13:14.999999000")));
     }
+    
+    @Test
+    @TargetDb(include = TargetDb.Db.SQL_SERVER)
+    public void LocalDateとLocalDateTimeを登録できること_SqlServer() throws Exception {
+        VariousDbTestHelper.createTable(JSR310SqlServer.class);
+        final SqlPStatement statement = connection.prepareStatement("insert into jsr310 (id, date_col, timestamp_col) values (1, ?, ?) ");
+        statement.setObject(1, LocalDate.of(2017, 1, 2));
+        statement.setObject(2, LocalDateTime.of(1980, 2, 29, 12, 13, 14, 999999000));
+        statement.executeUpdate();
+        connection.commit();
+
+        final List<JSR310SqlServer> actual = VariousDbTestHelper.findAll(JSR310SqlServer.class);
+        assertThat(actual)
+                .extracting("date", "timestamp")
+                .containsExactly(tuple(DateUtil.getDate("20170102"), Timestamp.valueOf("1980-02-29 12:13:14.999999000")));
+    }
 
     @Test
+    @TargetDb(exclude = TargetDb.Db.SQL_SERVER)
     public void LocalDateを条件にできること() throws Exception {
+        VariousDbTestHelper.createTable(JSR310.class);
         VariousDbTestHelper.setUpTable(
                 new JSR310(1L, DateUtil.getDate("20170809"), Timestamp.valueOf("2016-01-01 11:22:33.123321123")),
                 new JSR310(2L, DateUtil.getDate("20170810"), Timestamp.valueOf("2016-01-01 11:22:33.123321123")),
@@ -93,9 +107,28 @@ public class NablarchJdbcTest {
                   .extracting(input -> tuple(input.getLong("id"), input.getDate("dateCol")))
                   .containsExactly(tuple(2L, DateUtil.getDate("20170810")));
     }
+    
+    @Test
+    @TargetDb(include = TargetDb.Db.SQL_SERVER)
+    public void LocalDateを条件にできること_SqlServer() throws Exception {
+        VariousDbTestHelper.createTable(JSR310SqlServer.class);
+        VariousDbTestHelper.setUpTable(
+                new JSR310SqlServer(1L, new java.sql.Date(DateUtil.getDate("20170809").getTime()), Timestamp.valueOf("2016-01-01 11:22:33.123321123")),
+                new JSR310SqlServer(2L, new java.sql.Date(DateUtil.getDate("20170810").getTime()), Timestamp.valueOf("2016-01-01 11:22:33.123321123")),
+                new JSR310SqlServer(3L, new java.sql.Date(DateUtil.getDate("20170811").getTime()), Timestamp.valueOf("2016-01-01 11:22:33.123321123"))
+        );
+        final SqlPStatement statement = connection.prepareStatement("select * from jsr310 where date_col = ?");
+        statement.setObject(1, LocalDate.of(2017, 8, 10));
+
+        assertThat(statement.retrieve())
+                .extracting(input -> tuple(input.getLong("id"), input.getDate("dateCol")))
+                .containsExactly(tuple(2L, DateUtil.getDate("20170810")));
+    }
 
     @Test
+    @TargetDb(exclude = TargetDb.Db.SQL_SERVER)
     public void LocalDateTimeを条件にできること() throws Exception {
+        VariousDbTestHelper.createTable(JSR310.class);
 
         VariousDbTestHelper.setUpTable(
                 new JSR310(1L, DateUtil.getDate("20170809"), Timestamp.valueOf("2016-01-01 11:22:33.123321000")),
@@ -108,6 +141,24 @@ public class NablarchJdbcTest {
         assertThat(statement.retrieve())
                   .extracting(input -> tuple(input.getLong("id"), input.getTimestamp("timestampCol")))
                   .containsExactly(tuple(2L, Timestamp.valueOf("2016-01-01 11:22:34.123321000")));
+    }
+
+    @Test
+    @TargetDb(include = TargetDb.Db.SQL_SERVER)
+    public void LocalDateTimeを条件にできること_SqlServer() throws Exception {
+        VariousDbTestHelper.createTable(JSR310SqlServer.class);
+
+        VariousDbTestHelper.setUpTable(
+                new JSR310SqlServer(1L, new java.sql.Date(DateUtil.getDate("20170809").getTime()), Timestamp.valueOf("2016-01-01 11:22:33.123321000")),
+                new JSR310SqlServer(2L, new java.sql.Date(DateUtil.getDate("20170810").getTime()), Timestamp.valueOf("2016-01-01 11:22:34.123321000")),
+                new JSR310SqlServer(3L, new java.sql.Date(DateUtil.getDate("20170811").getTime()), Timestamp.valueOf("2016-01-01 11:22:35.123321000"))
+        );
+        final SqlPStatement statement = connection.prepareStatement("select * from jsr310 where timestamp_col = ?");
+        statement.setObject(1, LocalDateTime.of(2016, 1, 1, 11, 22, 34, 123321000));
+
+        assertThat(statement.retrieve())
+                .extracting(input -> tuple(input.getLong("id"), input.getTimestamp("timestampCol")))
+                .containsExactly(tuple(2L, Timestamp.valueOf("2016-01-01 11:22:34.123321000")));
     }
 
     @Entity
@@ -129,6 +180,30 @@ public class NablarchJdbcTest {
         }
 
         public JSR310(final Long id, final Date date, final Timestamp timestamp) {
+            this.id = id;
+            this.date = date;
+            this.timestamp = timestamp;
+        }
+    }
+    
+    @Entity
+    @Table(name = "jsr310")
+    public static class JSR310SqlServer {
+
+        @Id
+        @Column(name = "id", length = 15)
+        public Long id;
+
+        @Column(name = "date_col", columnDefinition = "date")
+        public java.sql.Date date;
+
+        @Column(name = "timestamp_col", columnDefinition = "datetime2")
+        public Timestamp timestamp;
+
+        public JSR310SqlServer() {
+        }
+
+        public JSR310SqlServer(final Long id, final java.sql.Date date, final Timestamp timestamp) {
             this.id = id;
             this.date = date;
             this.timestamp = timestamp;

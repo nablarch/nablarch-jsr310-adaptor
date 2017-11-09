@@ -27,11 +27,11 @@ import nablarch.core.util.DateUtil;
 import nablarch.integration.jsr310.util.DateTimeUtil;
 import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.db.helper.DatabaseTestRunner;
+import nablarch.test.support.db.helper.TargetDb;
 import nablarch.test.support.db.helper.VariousDbTestHelper;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,18 +49,11 @@ public class UniversalDaoTest {
     /** テストで使用するコネクション */
     private TransactionManagerConnection connection;
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        VariousDbTestHelper.createTable(TestEntity.class);
-    }
-
     @Before
     public void setUp() throws Exception {
         final ConnectionFactory connectionFactory = SystemRepository.get("connectionFactory");
         connection = connectionFactory.getConnection(TransactionContext.DEFAULT_TRANSACTION_CONTEXT_KEY);
         DbConnectionContext.setConnection(connection);
-
-        VariousDbTestHelper.delete(TestEntity.class);
     }
 
     @After
@@ -72,7 +65,9 @@ public class UniversalDaoTest {
     }
 
     @Test
+    @TargetDb(exclude = TargetDb.Db.SQL_SERVER)
     public void 登録できること() throws Exception {
+        VariousDbTestHelper.createTable(TestEntity.class);
         final LocalDate date = LocalDate.now();
         final LocalDateTime dateTime = LocalDateTime.now()
                 .withNano(123321000);
@@ -87,9 +82,30 @@ public class UniversalDaoTest {
                 .extracting("id", "d", "t")
                 .containsExactly(tuple(1L, DateTimeUtil.getDate(date), DateTimeUtil.getTimestamp(dateTime)));
     }
+    
+    @Test
+    @TargetDb(include = TargetDb.Db.SQL_SERVER)
+    public void 登録できること_SqlServer() throws Exception {
+        VariousDbTestHelper.createTable(TestEntitySqlServer.class);
+        final LocalDate date = LocalDate.now();
+        final LocalDateTime dateTime = LocalDateTime.now()
+                .withNano(123321000);
+        final DaoEntity entity = new DaoEntity(1L, date, dateTime);
+
+        UniversalDao.insert(entity);
+        connection.commit();
+
+        final List<TestEntitySqlServer> actual = VariousDbTestHelper.findAll(TestEntitySqlServer.class);
+
+        assertThat(actual)
+                .extracting("id", "d", "t")
+                .containsExactly(tuple(1L, DateTimeUtil.getDate(date), DateTimeUtil.getTimestamp(dateTime)));
+    }
 
     @Test
+    @TargetDb(exclude = TargetDb.Db.SQL_SERVER)
     public void 検索結果として取得できること() throws Exception {
+        VariousDbTestHelper.createTable(TestEntity.class);
         VariousDbTestHelper.setUpTable(
                 new TestEntity(1L, DateUtil.getDate("20110101"), Timestamp.valueOf("2012-01-02 11:22:33.123321000")),
                 new TestEntity(2L, DateUtil.getDate("20110102"), Timestamp.valueOf("2012-02-02 11:22:33.123321000")),
@@ -102,13 +118,52 @@ public class UniversalDaoTest {
                 .hasFieldOrPropertyWithValue("dateCol", LocalDate.of(2011, 1, 2))
                 .hasFieldOrPropertyWithValue("timestampCol", LocalDateTime.of(2012, 2, 2, 11, 22, 33, 123321000));
     }
+    
+    @Test
+    @TargetDb(include = TargetDb.Db.SQL_SERVER)
+    public void 検索結果として取得できること_SqlServer() throws Exception {
+        VariousDbTestHelper.createTable(TestEntitySqlServer.class);
+        VariousDbTestHelper.setUpTable(
+                new TestEntitySqlServer(1L, new java.sql.Date(DateUtil.getDate("20110101").getTime()), Timestamp.valueOf("2012-01-02 11:22:33.123321000")),
+                new TestEntitySqlServer(2L, new java.sql.Date(DateUtil.getDate("20110102").getTime()), Timestamp.valueOf("2012-02-02 11:22:33.123321000")),
+                new TestEntitySqlServer(3L, new java.sql.Date(DateUtil.getDate("20110103").getTime()), Timestamp.valueOf("2012-03-02 11:22:33.123321000"))
+        );
+
+        final DaoEntity actual = UniversalDao.findById(DaoEntity.class, 2L);
+        assertThat(actual)
+                .hasFieldOrPropertyWithValue("id", 2L)
+                .hasFieldOrPropertyWithValue("dateCol", LocalDate.of(2011, 1, 2))
+                .hasFieldOrPropertyWithValue("timestampCol", LocalDateTime.of(2012, 2, 2, 11, 22, 33, 123321000));
+    }
 
     @Test
+    @TargetDb(exclude = TargetDb.Db.SQL_SERVER)
     public void 条件として使用できること() throws Exception {
+        VariousDbTestHelper.createTable(TestEntity.class);
         VariousDbTestHelper.setUpTable(
                 new TestEntity(1L, DateUtil.getDate("20110101"), Timestamp.valueOf("2012-01-02 11:22:33.123321000")),
                 new TestEntity(2L, DateUtil.getDate("20110102"), Timestamp.valueOf("2012-02-02 11:22:33.123321000")),
                 new TestEntity(3L, DateUtil.getDate("20110103"), Timestamp.valueOf("2012-03-02 11:22:33.123321000"))
+        );
+
+        final EntityList<DaoEntity> actual = UniversalDao.findAllBySqlFile(DaoEntity.class,
+                "nablarch.integration.jsr310.db.test#find",
+                new DaoEntity(2L, LocalDate.of(2011, 1, 2), LocalDateTime.of(2012, 2, 2, 11, 22, 33, 123321000)));
+
+        assertThat(actual)
+                .hasSize(1)
+                .extracting("id", "dateCol", "timestampCol")
+                .containsExactly(tuple(2L, LocalDate.of(2011, 1, 2), LocalDateTime.of(2012, 2, 2, 11, 22, 33, 123321000)));
+    }
+    
+    @Test
+    @TargetDb(include = TargetDb.Db.SQL_SERVER)
+    public void 条件として使用できること_SqlServer() throws Exception {
+        VariousDbTestHelper.createTable(TestEntitySqlServer.class);
+        VariousDbTestHelper.setUpTable(
+                new TestEntitySqlServer(1L, new java.sql.Date(DateUtil.getDate("20110101").getTime()), Timestamp.valueOf("2012-01-02 11:22:33.123321000")),
+                new TestEntitySqlServer(2L, new java.sql.Date(DateUtil.getDate("20110102").getTime()), Timestamp.valueOf("2012-02-02 11:22:33.123321000")),
+                new TestEntitySqlServer(3L, new java.sql.Date(DateUtil.getDate("20110103").getTime()), Timestamp.valueOf("2012-03-02 11:22:33.123321000"))
         );
 
         final EntityList<DaoEntity> actual = UniversalDao.findAllBySqlFile(DaoEntity.class,
@@ -140,6 +195,30 @@ public class UniversalDaoTest {
         }
 
         public TestEntity(final Long id, final Date d, final Timestamp t) {
+            this.id = id;
+            this.d = d;
+            this.t = t;
+        }
+    }
+    
+    @Entity
+    @Table(name = "test_entity")
+    public static class TestEntitySqlServer {
+
+        @Column(name = "id", length = 15)
+        @Id
+        public Long id;
+
+        @Column(name = "date_col", columnDefinition = "date")
+        public java.sql.Date d;
+
+        @Column(name = "timestamp_col", columnDefinition = "datetime2")
+        public Timestamp t;
+
+        public TestEntitySqlServer() {
+        }
+
+        public TestEntitySqlServer(final Long id, final java.sql.Date d, final Timestamp t) {
             this.id = id;
             this.d = d;
             this.t = t;

@@ -1,2 +1,4 @@
 nablarch.integration.jsr310.db.NablarchJdbcTest$JSR310
+nablarch.integration.jsr310.db.NablarchJdbcTest$JSR310SqlServer
 nablarch.integration.jsr310.db.UniversalDaoTest$TestEntity
+nablarch.integration.jsr310.db.UniversalDaoTest$TestEntitySqlServer
