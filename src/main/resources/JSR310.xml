@@ -2,10 +2,8 @@
 <component-configuration
     xmlns="http://tis.co.jp/nablarch/component-configuration"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://tis.co.jp/nablarch/component-configuration component-configuration.xsd">
+    xsi:schemaLocation="http://tis.co.jp/nablarch/component-configuration http://tis.co.jp/nablarch/component-configuration.xsd">
   
   <component name="conversionManager" class="nablarch.integration.jsr310.beans.Jsr310ConversionManager" />
-  
-  <component name="attributeConverter" class="nablarch.integration.jsr310.db.Jsr310AttributeConverterFactory" />
   
 </component-configuration>
