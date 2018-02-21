@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import nablarch.core.beans.Converter;
+import nablarch.core.beans.CopyOptions;
 import nablarch.core.beans.CopyOptions.DefaultConvertersProvider;
 import nablarch.integration.jsr310.beans.converter.DateConverter;
 import nablarch.integration.jsr310.beans.converter.Jsr310StringConverter;
@@ -16,6 +17,12 @@ import nablarch.integration.jsr310.beans.converter.LocalDateTimeConverter;
 import nablarch.integration.jsr310.beans.converter.SqlDateConverter;
 import nablarch.integration.jsr310.beans.converter.SqlTimestampConverter;
 
+/**
+ * {@link CopyOptions}を構築する際、日付関連の{@link Converter}にDate and Time APIをサポートしたものを加える{@link ConvertersProvider}の実装クラス。
+ * 
+ * @author Taichi Uragami
+ *
+ */
 public class Jsr310ConvertersProvider extends DefaultConvertersProvider {
 
     @Override
