@@ -3,8 +3,13 @@ package nablarch.integration.jsr310.beans.converter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import nablarch.integration.jsr310.util.DateTimeUtil;
 import nablarch.core.beans.ConversionException;
@@ -37,6 +42,28 @@ import nablarch.core.beans.converter.SingleValueExtracter;
  * @author TIS
  */
 public class LocalDateTimeConverter implements Converter<LocalDateTime> {
+
+    /** 日付パターン */
+    private final List<DateTimeFormatter> formatters;
+
+    /**
+     * デフォルトコンストラクタ
+     */
+    public LocalDateTimeConverter() {
+        this.formatters = Collections.emptyList();
+    }
+
+    /**
+     * 日付パターンを設定してインスタンスを構築する。
+     * 
+     * @param patterns 日付パターン
+     */
+    public LocalDateTimeConverter(List<String> patterns) {
+        this.formatters = patterns.stream()
+                .map(DateTimeFormatter::ofPattern)
+                .collect(Collectors.toList());
+    }
+
     @Override
     public LocalDateTime convert(final Object value) {
         if (value instanceof LocalDate) {
@@ -50,11 +77,30 @@ public class LocalDateTimeConverter implements Converter<LocalDateTime> {
         } else if (value instanceof Calendar) {
             return DateTimeUtil.getLocalDateTime(Calendar.class.cast(value));
         } else if (value instanceof String) {
-            return DateTimeUtil.getLocalDateTime(String.class.cast(value));
+            return convertFromString(String.class.cast(value));
         } else if (value instanceof String[]) {
             return SingleValueExtracter.toSingleValue((String[]) value, this, LocalDateTime.class);
         } else {
             throw new ConversionException(LocalDate.class, value);
         }
+    }
+
+    private LocalDateTime convertFromString(String value) {
+        if (formatters.isEmpty() == false) {
+            DateTimeParseException lastThrownException = null;
+            for (DateTimeFormatter formatter : formatters) {
+                try {
+                    return LocalDateTime.parse(value, formatter);
+                } catch (DateTimeParseException ignore) {
+                    //複数のパターンを順番に試すのでParseExceptionは無視する
+                    lastThrownException = ignore;
+                }
+            }
+            //すべてのパターンが失敗した場合は例外をスロー
+            throw new IllegalArgumentException(
+                    "the string was not formatted " + formatters + ". date = " + value + ".",
+                    lastThrownException);
+        }
+        return DateTimeUtil.getLocalDateTime(String.class.cast(value));
     }
 }

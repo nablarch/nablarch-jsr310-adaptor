@@ -1,22 +1,25 @@
 package nablarch.integration.jsr310.beans.converter;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 
-import nablarch.core.beans.ConversionException;
-import nablarch.core.beans.Converter;
-import nablarch.core.util.DateUtil;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+
+import nablarch.core.beans.ConversionException;
+import nablarch.core.beans.Converter;
+import nablarch.core.util.DateUtil;
 
 /**
  * {@link LocalDateConverter}のテスト
@@ -78,6 +81,39 @@ public class LocalDateConverterTest {
             expectedException.expect(ConversionException.class);
             Converter converter = new LocalDateConverter();
             converter.convert(value);
+        }
+    }
+
+
+    /**
+     * 日付パターンのテスト。
+     *
+     */
+    public static class PatternTest {
+
+        @Rule
+        public ExpectedException expectedException = ExpectedException.none();
+
+        @Test
+        public void デフォルト() {
+            final LocalDateConverter sut = new LocalDateConverter();
+            assertEquals(LocalDate.of(2018, 2, 21), sut.convert("20180221"));
+        }
+
+        @Test
+        public void パターン指定() {
+            final LocalDateConverter sut = new LocalDateConverter(
+                    Arrays.asList("yyyy/MM/dd", "yyyy.MM.dd"));
+            assertEquals(LocalDate.of(2018, 2, 21), sut.convert("2018/02/21"));
+            assertEquals(LocalDate.of(2018, 2, 21), sut.convert("2018.02.21"));
+        }
+
+        @Test
+        public void 変換失敗() {
+            expectedException.expect(IllegalArgumentException.class);
+            final LocalDateConverter sut = new LocalDateConverter(
+                    Arrays.asList("yyyy/MM/dd", "yyyy.MM.dd"));
+            sut.convert("20180221");
         }
     }
 }
