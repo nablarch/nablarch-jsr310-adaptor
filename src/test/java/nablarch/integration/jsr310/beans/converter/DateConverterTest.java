@@ -1,22 +1,27 @@
 package nablarch.integration.jsr310.beans.converter;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Date;
 
-import nablarch.core.beans.ConversionException;
-import nablarch.core.beans.Converter;
-import nablarch.core.util.DateUtil;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+
+import nablarch.core.beans.ConversionException;
+import nablarch.core.beans.Converter;
+import nablarch.core.util.DateUtil;
 
 /**
  * {@link DateConverter}のテスト
@@ -72,6 +77,28 @@ public class DateConverterTest {
             expectedException.expect(ConversionException.class);
             Converter converter = new DateConverter();
             converter.convert(value);
+        }
+    }
+
+    /**
+     * 日付パターンのテスト。
+     *
+     */
+    public static class PatternTest {
+
+        @Test
+        public void デフォルト() {
+            final SqlDateConverter sut = new SqlDateConverter();
+            assertEquals(new Date(Timestamp.valueOf("2018-02-21 00:00:00").getTime()),
+                    sut.convert("20180221"));
+        }
+
+        @Test
+        public void パターン指定() {
+            final SqlDateConverter sut = new SqlDateConverter(
+                    Collections.singletonList("yyyy/MM/dd"));
+            assertEquals(new Date(Timestamp.valueOf("2018-02-21 00:00:00").getTime()),
+                    sut.convert("2018/02/21"));
         }
     }
 }

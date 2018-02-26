@@ -1,16 +1,19 @@
 package nablarch.integration.jsr310.beans.converter;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 
 import nablarch.core.beans.ConversionException;
 import nablarch.core.beans.Converter;
 import nablarch.core.util.DateUtil;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
@@ -77,6 +80,26 @@ public class SqlDateConverterTest {
             expectedException.expect(ConversionException.class);
             Converter converter = new SqlDateConverter();
             converter.convert(value);
+        }
+    }
+
+    /**
+     * 日付パターンのテスト。
+     *
+     */
+    public static class PatternTest {
+
+        @Test
+        public void デフォルト() {
+            final SqlDateConverter sut = new SqlDateConverter();
+            assertEquals(Date.valueOf("2018-02-21"), sut.convert("20180221"));
+        }
+
+        @Test
+        public void パターン指定() {
+            final SqlDateConverter sut = new SqlDateConverter(
+                    Collections.singletonList("yyyy/MM/dd"));
+            assertEquals(Date.valueOf("2018-02-21"), sut.convert("2018/02/21"));
         }
     }
 }

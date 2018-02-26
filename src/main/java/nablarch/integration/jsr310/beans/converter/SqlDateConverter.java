@@ -2,6 +2,7 @@ package nablarch.integration.jsr310.beans.converter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import nablarch.core.beans.Converter;
 
@@ -23,6 +24,23 @@ import nablarch.core.beans.Converter;
  * @author TIS
  */
 public class SqlDateConverter extends nablarch.core.beans.converter.SqlDateConverter {
+
+    /**
+     * デフォルトコンストラクタ
+     */
+    public SqlDateConverter() {
+        super();
+    }
+
+    /**
+     * 日付パターンを設定してインスタンスを構築する。
+     * 
+     * @param patterns 日付パターン
+     */
+    public SqlDateConverter(List<String> patterns) {
+        super(patterns);
+    }
+
     @Override
     public java.sql.Date convert(final Object value) {
         if (value instanceof LocalDate) {

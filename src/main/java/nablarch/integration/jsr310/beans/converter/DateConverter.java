@@ -3,10 +3,10 @@ package nablarch.integration.jsr310.beans.converter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 import nablarch.core.beans.Converter;
 import nablarch.integration.jsr310.util.DateTimeUtil;
-
 
 /**
  * Date and Time APIをサポートし、{@code java.util.Date}型への変換を行う {@link Converter} 。
@@ -24,6 +24,22 @@ import nablarch.integration.jsr310.util.DateTimeUtil;
  * @author TIS
  */
 public class DateConverter extends nablarch.core.beans.converter.DateConverter {
+
+    /**
+     * デフォルトコンストラクタ
+     */
+    public DateConverter() {
+        super();
+    }
+
+    /**
+     * 日付パターンを設定してインスタンスを構築する。
+     * 
+     * @param patterns 日付パターン
+     */
+    public DateConverter(List<String> patterns) {
+        super(patterns);
+    }
 
     @Override
     public Date convert(final Object value) {
