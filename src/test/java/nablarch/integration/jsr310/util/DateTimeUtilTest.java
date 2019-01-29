@@ -15,7 +15,6 @@ import java.util.Date;
 import nablarch.core.repository.SystemRepository;
 import nablarch.core.util.DateUtil;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,11 +25,6 @@ public class DateTimeUtilTest {
 
     @Before
     public void setUp() throws Exception {
-        SystemRepository.clear();
-    }
-
-    @After
-    public void tearDown() throws Exception {
         SystemRepository.clear();
     }
 
