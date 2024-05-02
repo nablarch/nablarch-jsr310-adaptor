@@ -3,34 +3,17 @@ package nablarch.integration.jsr310.util;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
+import nablarch.core.util.DateTimeConverterConfiguration;
 import nablarch.core.util.annotation.Published;
 
 /**
  * Date and Time APIに関する共通的なフォーマッタ、タイムゾーンを扱うためのインターフェース。
+ * {@link nablarch.core.util.DateTimeConverterConfiguration}と同様のクラス
+ * <p>
+ * Date and Time APIの拡張はコア機能に取り込まれたため、基本は{@link nablarch.core.util.DateTimeConverterConfiguration}を使用すること。
+ * ただし、後方互換を保つために残している。
  *
  * @author TIS
  */
 @Published(tag = "architect")
-public interface DateTimeConfiguration {
-
-    /**
-     * 日付向けのフォーマッタ
-     *
-     * @return 日付向けの{@code java.time.format.DateTimeFormatter}のインスタンス
-     */
-    DateTimeFormatter getDateFormatter();
-
-    /**
-     * 日時向けのフォーマッタ
-     *
-     * @return 日時向けの{@code java.time.format.DateTimeFormatter}のインスタンス
-     */
-    DateTimeFormatter getDateTimeFormatter();
-
-    /**
-     * システムが依存する{@code java.time.ZoneId}を取得する
-     *
-     * @return システムが依存するで管理している{@code java.time.ZoneId}
-     */
-    ZoneId getSystemZoneId();
-}
+public interface DateTimeConfiguration extends DateTimeConverterConfiguration { }
