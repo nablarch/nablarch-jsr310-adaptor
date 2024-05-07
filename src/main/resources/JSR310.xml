@@ -5,8 +5,8 @@
     xsi:schemaLocation="http://tis.co.jp/nablarch/component-configuration http://tis.co.jp/nablarch/component-configuration.xsd">
   
 <!--  <component name="conversionManager" class="nablarch.integration.jsr310.beans.Jsr310ConversionManager" />-->
-<!--  Date and Time APIの拡張である Jsr310ConversionManager はコア機能に取り込まれたため、基本は{@link nablarch.core.beans.BasicConversionManager}を使用すること。
- ただし、後方互換を保つために残している。-->
+<!--  Date and Time APIの拡張である Jsr310ConversionManager はコア機能に取り込まれた。そのためアダプタをimportせずとも、デフォルトの{@link nablarch.core.beans.BasicConversionManager}でDate and Time APIを使用できる。 -->
+<!--  このアダプタは後方互換維持のために残している。-->
 
   
 </component-configuration>

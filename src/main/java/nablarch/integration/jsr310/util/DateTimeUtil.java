@@ -8,7 +8,7 @@ import java.util.Date;
 
 import nablarch.core.repository.SystemRepository;
 import nablarch.core.util.annotation.Published;
-import util.DateTimeConverterUtil;
+import nablarch.core.util.DateTimeConverterUtil;
 
 /**
  * Date and Time API向けのユーティリティ。
@@ -18,7 +18,7 @@ import util.DateTimeConverterUtil;
  * 取得出来ない場合は{@link BasicDateTimeConfiguration}を使用する。
  * <p>
  * Date and Time APIの拡張はコア機能に取り込まれたため、基本は{@link nablarch.core.util.DateTimeConverterUtil}を使用すること。
- * ただし、後方互換を保つために残している。
+ * このクラスは後方互換維持のため残している。
  *
  * @author TIS
  * @see DateTimeConfiguration

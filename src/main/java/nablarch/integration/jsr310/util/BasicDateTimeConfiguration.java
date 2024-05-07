@@ -1,17 +1,16 @@
 package nablarch.integration.jsr310.util;
 
-import nablarch.core.util.DateTimeConverterConfiguration;
-import util.BasicDateTimeConverterConfiguration;
+import nablarch.core.util.BasicDateTimeConverterConfiguration;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 /**
  * {@link DateTimeConfiguration}のデフォルト実装クラス
- * {@link nablarch.core.util.DateTimeConverterConfiguration}と同様のクラス
+ * {@link nablarch.core.util.BasicDateTimeConverterConfiguration}と同様のクラス
  * <p>
  * Date and Time APIの拡張はコア機能に取り込まれたため、基本は{@link nablarch.core.util.BasicDateTimeConverterConfiguration}を使用すること。
- * ただし、後方互換を保つために残している。
+ * このクラスは後方互換維持のため残している。
  *
  * @author TIS
  */
