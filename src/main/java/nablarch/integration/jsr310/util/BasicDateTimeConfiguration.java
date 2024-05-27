@@ -7,27 +7,11 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * {@link DateTimeConfiguration}のデフォルト実装クラス
- * {@link nablarch.core.util.BasicDateTimeConverterConfiguration}と同様のクラス
+ * {@link nablarch.core.util.BasicDateTimeConverterConfiguration}の代替として、デフォルトのコンバータのうち日付関連の処理をDate and Time APIをサポートしたものに差し替えたクラス
  * <p>
- * Date and Time APIの拡張はコア機能に取り込まれたため、基本は{@link nablarch.core.util.BasicDateTimeConverterConfiguration}を使用すること。
- * このクラスは後方互換維持のため残している。
+ * 本アダプタで提供される機能はNablarch本体に取り込まれており、本アダプタは後方互換を維持するために残している。
+ * 新しく使用する場合は、Nablarch本体の{@link nablarch.core.util.BasicDateTimeConverterConfiguration}を使用すること。
  *
  * @author TIS
  */
-public class BasicDateTimeConfiguration implements DateTimeConfiguration {
-
-    @Override
-    public DateTimeFormatter getDateFormatter() {
-        return new BasicDateTimeConverterConfiguration().getDateFormatter();
-    }
-
-    @Override
-    public DateTimeFormatter getDateTimeFormatter() {
-        return new BasicDateTimeConverterConfiguration().getDateTimeFormatter();
-    }
-
-    @Override
-    public ZoneId getSystemZoneId() {
-        return new BasicDateTimeConverterConfiguration().getSystemZoneId();
-    }
-}
+public class BasicDateTimeConfiguration extends BasicDateTimeConverterConfiguration implements DateTimeConfiguration { }

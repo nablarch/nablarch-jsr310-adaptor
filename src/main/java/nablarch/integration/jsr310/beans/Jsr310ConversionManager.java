@@ -5,8 +5,8 @@ import nablarch.core.beans.BasicConversionManager;
 /**
  * {@link nablarch.core.beans.BasicConversionManager}と同様のクラス
  * <p>
- * Date and Time APIの拡張はコア機能に取り込まれたため、基本は{@link nablarch.core.beans.BasicConversionManager}を使用すること。
- * 設定ファイルでこのクラスを直接指定している可能性を考慮し、後方互換維持のため残している。
+ * 本アダプタで提供される機能はNablarch本体に取り込まれており、本アダプタは後方互換を維持するために残している。
+ * 新しく使用する場合は、Nablarch本体の{@link nablarch.core.beans.BasicConversionManager}を使用すること。
  *
  * @author TIS
  */

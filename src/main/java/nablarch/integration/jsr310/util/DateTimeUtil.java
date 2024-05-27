@@ -17,8 +17,8 @@ import nablarch.core.util.DateTimeConverterUtil;
  * {@link SystemRepository}からキー名:dateTimeConfigurationで{@link DateTimeConfiguration}が取得出来た場合はそのオブジェクトを、
  * 取得出来ない場合は{@link BasicDateTimeConfiguration}を使用する。
  * <p>
- * Date and Time APIの拡張はコア機能に取り込まれたため、基本は{@link nablarch.core.util.DateTimeConverterUtil}を使用すること。
- * このクラスは後方互換維持のため残している。
+ * 本アダプタで提供される機能はNablarch本体に取り込まれており、本アダプタは後方互換を維持するために残している。
+ * 新しく使用する場合は、Nablarch本体の{@link nablarch.core.util.DateTimeConverterUtil}を使用すること。
  *
  * @author TIS
  * @see DateTimeConfiguration
