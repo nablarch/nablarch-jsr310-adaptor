@@ -1,7 +1,6 @@
 package nablarch.integration.jsr310.util;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -15,6 +14,7 @@ import java.util.Date;
 import nablarch.core.repository.SystemRepository;
 import nablarch.core.util.DateUtil;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,17 +25,17 @@ import org.junit.Test;
 public class DateTimeUtilTest {
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         SystemRepository.clear();
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         SystemRepository.clear();
     }
 
     @Test
-    public void getLocalDateFromString() throws Exception {
+    public void getLocalDateFromString() {
         assertThat(DateTimeUtil.getLocalDate("19490403"), is(LocalDate.of(1949, Month.APRIL, 3)));
         
         SystemRepository.load(() -> Collections.singletonMap("dateTimeConfiguration", new BasicDateTimeConfiguration() {
@@ -49,20 +49,20 @@ public class DateTimeUtilTest {
     }
 
     @Test
-    public void getLocalDateFromUtilDate() throws Exception {
+    public void getLocalDateFromUtilDate() {
         final Date date = DateUtil.getDate("20170401");
         assertThat(DateTimeUtil.getLocalDate(date), is(LocalDate.of(2017, Month.APRIL, 1)));
     }
 
     @Test
-    public void getLocalDateAsSqlDate() throws Exception {
+    public void getLocalDateAsSqlDate() {
         final Date date = DateUtil.getDate("20161231");
         assertThat(DateTimeUtil.getLocalDateAsSqlDate(new java.sql.Date(date.getTime())),
                 is(LocalDate.of(2016, Month.DECEMBER, 31)));
     }
 
     @Test
-    public void getLocalDateFromCalendar() throws Exception {
+    public void getLocalDateFromCalendar() {
         final Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, 2017);
         calendar.set(Calendar.MONTH, Calendar.JUNE);
@@ -72,7 +72,7 @@ public class DateTimeUtilTest {
     }
 
     @Test
-    public void getLocalDateTimeFromString() throws Exception {
+    public void getLocalDateTimeFromString() {
         assertThat(DateTimeUtil.getLocalDateTime("2017-01-02T03:04:05Z"),
                 is(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5)));
 
@@ -88,21 +88,21 @@ public class DateTimeUtilTest {
     }
 
     @Test
-    public void getLocalDateTimeFromUtilDate() throws Exception {
+    public void getLocalDateTimeFromUtilDate() {
         final Timestamp timestamp = Timestamp.valueOf("2017-01-02 03:04:05");
         assertThat(DateTimeUtil.getLocalDateTime(new Date(timestamp.getTime())),
                 is(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5)));
     }
 
     @Test
-    public void getLocalDateTimeAsSqlDate() throws Exception {
+    public void getLocalDateTimeAsSqlDate() {
         final Timestamp timestamp = Timestamp.valueOf("2017-12-02 03:04:05");
         assertThat(DateTimeUtil.getLocalDateTimeAsSqlDate(new java.sql.Date(timestamp.getTime())),
                 is(LocalDateTime.of(2017, 12, 2, 0, 0)));
     }
 
     @Test
-    public void getLocalDAteTimeFromCalendar() throws Exception {
+    public void getLocalDAteTimeFromCalendar() {
         final Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, 2017);
         calendar.set(Calendar.MONTH, Calendar.JUNE);
@@ -117,20 +117,20 @@ public class DateTimeUtilTest {
     }
 
     @Test
-    public void getDateFromLocalDate() throws Exception {
+    public void getDateFromLocalDate() {
         assertThat(DateTimeUtil.getDate(LocalDate.of(2017, 11, 12)),
                 is(DateUtil.getDate("20171112")));
     }
 
     @Test
-    public void getDateFromLocalDateTime() throws Exception {
+    public void getDateFromLocalDateTime() {
         assertThat(DateTimeUtil.getDate(LocalDateTime.of(2017, 1, 2, 3, 4, 5, 123456789)),
                 is(DateUtil.getParsedDate("2017/01/02 03:04:05.123", "yyyy/MM/dd hh:mm:ss.SSS")));
     }
     
     @Test
-    public void getTimestampFromLocalDateTime() throws Exception {
-        assertThat(DateTimeUtil.getDate(LocalDateTime.of(2017, 1, 2, 3, 4, 5, 123456789)),
+    public void getTimestampFromLocalDateTime() {
+        assertThat(DateTimeUtil.getTimestamp(LocalDateTime.of(2017, 1, 2, 3, 4, 5, 123456789)),
                 is(Timestamp.valueOf("2017-01-02 03:04:05.123456789")));
     }
 }

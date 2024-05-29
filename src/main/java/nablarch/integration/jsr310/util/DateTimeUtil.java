@@ -1,15 +1,14 @@
 package nablarch.integration.jsr310.util;
 
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Date;
 
 import nablarch.core.repository.SystemRepository;
 import nablarch.core.util.annotation.Published;
+import nablarch.core.beans.converter.DateTimeConverterUtil;
 
 /**
  * Date and Time API向けのユーティリティ。
@@ -17,6 +16,9 @@ import nablarch.core.util.annotation.Published;
  * 本ユーティリティが使用する日付文字列の形式などは、{@link SystemRepository}より取得する。
  * {@link SystemRepository}からキー名:dateTimeConfigurationで{@link DateTimeConfiguration}が取得出来た場合はそのオブジェクトを、
  * 取得出来ない場合は{@link BasicDateTimeConfiguration}を使用する。
+ * <p>
+ * 本アダプタで提供される機能はNablarch本体に取り込まれており、本アダプタは後方互換を維持するために残している。
+ * 新しく使用する場合は、Nablarch本体の{@link nablarch.core.beans.converter.DateTimeConverterUtil}を使用すること。
  *
  * @author TIS
  * @see DateTimeConfiguration
@@ -60,7 +62,7 @@ public final class DateTimeUtil {
      * @return 日付文字列をパースして生成した{@code java.time.LocalDate}のインスタンス
      */
     public static LocalDate getLocalDate(final String date) {
-        return LocalDate.parse(date, getDateTimeConfiguration().getDateFormatter());
+        return DateTimeConverterUtil.getLocalDate(date);
     }
 
     /**
@@ -72,8 +74,7 @@ public final class DateTimeUtil {
      * @return 変換後の{@code java.time.LocalDate}のインスタンス
      */
     public static LocalDate getLocalDate(final Date date) {
-        return LocalDateTime.ofInstant(date.toInstant(), getDateTimeConfiguration().getSystemZoneId())
-                            .toLocalDate();
+        return DateTimeConverterUtil.getLocalDate(date);
     }
 
     /**
@@ -85,7 +86,7 @@ public final class DateTimeUtil {
      * @return 変換後の{@code java.time.LocalDate}のインスタンス
      */
     public static LocalDate getLocalDateAsSqlDate(final java.sql.Date date) {
-        return date.toLocalDate();
+        return DateTimeConverterUtil.getLocalDateAsSqlDate(date);
     }
 
     /**
@@ -95,7 +96,7 @@ public final class DateTimeUtil {
      * @return 変換後の{@code java.time.LocalDate}のインスタンス
      */
     public static LocalDate getLocalDate(final Calendar calendar) {
-        return getLocalDate(calendar.getTime());
+        return DateTimeConverterUtil.getLocalDate(calendar);
     }
 
     /**
@@ -105,13 +106,7 @@ public final class DateTimeUtil {
      * @return 変換後の値
      */
     public static LocalDateTime getLocalDateTime(final String date) {
-        if (date.endsWith("Z")) {
-            final Instant instant = Instant.from(
-                    getDateTimeConfiguration().getDateTimeFormatter().parse(date));
-            return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
-        } else {
-            return LocalDateTime.parse(date, getDateTimeConfiguration().getDateTimeFormatter());
-        }
+        return DateTimeConverterUtil.getLocalDateTime(date);
     }
 
     /**
@@ -121,7 +116,7 @@ public final class DateTimeUtil {
      * @return 変換後の{@code java.time.LocalDate}のインスタンス
      */
     public static LocalDateTime getLocalDateTime(final Date date) {
-        return LocalDateTime.ofInstant(date.toInstant(), getDateTimeConfiguration().getSystemZoneId());
+        return DateTimeConverterUtil.getLocalDateTime(date);
     }
 
     /**
@@ -133,8 +128,7 @@ public final class DateTimeUtil {
      * @return 変換後の{@code java.time.LocalDateTime}のインスタンス
      */
     public static LocalDateTime getLocalDateTimeAsSqlDate(final java.sql.Date date) {
-        return date.toLocalDate()
-                   .atStartOfDay();
+        return DateTimeConverterUtil.getLocalDateTimeAsSqlDate(date);
     }
 
     /**
@@ -144,7 +138,7 @@ public final class DateTimeUtil {
      * @return 変換後の{@code java.time.LocalDateTime}のインスタンス
      */
     public static LocalDateTime getLocalDateTime(final Calendar calendar) {
-        return getLocalDateTime(calendar.getTime());
+        return DateTimeConverterUtil.getLocalDateTime(calendar);
     }
 
     /**
@@ -154,8 +148,7 @@ public final class DateTimeUtil {
      * @return 変換後の{@code java.util.Date}のインスタンス
      */
     public static Date getDate(final LocalDateTime dateTime) {
-        return Date.from(dateTime.atZone(getDateTimeConfiguration().getSystemZoneId())
-                                 .toInstant());
+        return DateTimeConverterUtil.getDate(dateTime);
     }
 
     /**
@@ -165,8 +158,7 @@ public final class DateTimeUtil {
      * @return 変換後の{@code Timestamp}のインスタンス
      */
     public static Timestamp getTimestamp(final LocalDateTime dateTime) {
-        return Timestamp.from(dateTime.atZone(getDateTimeConfiguration().getSystemZoneId())
-                                      .toInstant());
+        return DateTimeConverterUtil.getTimestamp(dateTime);
     }
 
     /**
@@ -176,8 +168,6 @@ public final class DateTimeUtil {
      * @return 変換後の{@code java.util.Date}のインスタンス
      */
     public static Date getDate(final LocalDate date) {
-        return Date.from(LocalDate.class.cast(date)
-                                        .atStartOfDay(getDateTimeConfiguration().getSystemZoneId())
-                                        .toInstant());
+        return DateTimeConverterUtil.getDate(date);
     }
 }
